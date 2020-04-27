@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: youme
+ * @LastEditors: youme
+ * @Date: 2020-04-23 14:58:31
+ * @LastEditTime: 2020-04-24 13:03:18
+ */
 import Vue from 'vue';
 import Router from 'vue-router';
 import HelloWorld from '@/components/HelloWorld';
@@ -8,7 +15,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
+      name: 'Login',
       component: HelloWorld,
     },
   ],

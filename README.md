@@ -1,10 +1,6 @@
-![](https://haosmart2.oss-cn-beijing.aliyuncs.com/hs11/2020/04/23/186469796253010952.png?Expires=1587626674&OSSAccessKeyId=LTAI4FiwW4vVNWhBxPdCBXq8&Signature=eArKFKv5qU7FIEBqLQcsjSqtrjc%3D)
 <h1 align="center">Welcome to sweet-mind 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-0.1-blue.svg?cacheSeconds=2592000" />
-  <a href="123" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-  </a>
   <a href="https://github.com/kefranabg/readme-md-generator/blob/master/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
