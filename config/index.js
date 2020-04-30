@@ -2,6 +2,19 @@
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
+// 当前使用环境
+const env = 'development';
+
+// 网关地址
+let gateway;
+if (env === 'local') {
+  gateway = 'http://10.100.15.11:8040'; // 'http://10.100.82.31:8040';
+} else if (env === 'development') {
+  gateway = 'http://192.168.100.220:9706';
+} else if (env === 'production') {
+  gateway = 'http://39.106.104.48:8040';
+}
+
 const path = require('path')
 
 module.exports = {
@@ -10,7 +23,13 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/prong': {
+        target: gateway,
+        changeOrigin: true,
+        pathRewrite: {'^/prong': ''}
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
