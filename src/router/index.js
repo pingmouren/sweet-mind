@@ -3,19 +3,33 @@
  * @Author: youme
  * @LastEditors: youme
  * @Date: 2020-04-23 14:58:31
- * @LastEditTime: 2020-04-29 08:31:16
+ * @LastEditTime: 2020-05-06 10:00:55
  */
 import Vue from 'vue'
 import Router from 'vue-router'
+import system from './system'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
+      path: '/user',
+      component: () => import('@/layouts/LoginLayout'),
+      redirect: '/user/login',
+      children: [
+        {
+          path: 'login',
+          component: () => import('@/views/Login')
+        }
+      ]
+    },
+    {
       path: '/',
-      name: 'Login',
-      component: () => import('@/views/Login')
+      component: () => import('@/layouts'),
+      children: [
+        system
+      ]
     }
   ]
 })

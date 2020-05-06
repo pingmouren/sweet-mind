@@ -3,16 +3,17 @@
  * @Author: youme
  * @LastEditors: youme
  * @Date: 2020-04-28 14:43:59
- * @LastEditTime: 2020-04-30 09:42:05
+ * @LastEditTime: 2020-05-06 10:30:22
  */
 import { Message } from 'element-ui'
-import router from '@/router'
+// import router from '@/router'
 import { Base64 } from 'js-base64'
 import {
   getTenantInfo,
   getPublicKey,
   getStnInfo,
-  onLogin
+  onLogin,
+  renderMenusLoginUser
 } from '@/api/login'
 import { setAuthority } from '@/utils/authority'
 
@@ -26,7 +27,10 @@ const state = {
   nonce: undefined,
   salt: undefined,
   access_token: undefined,
-  status: undefined
+  status: undefined,
+  menuList: [],
+  menuData: [],
+  menuDict: {}
 }
 
 const mutations = {
@@ -34,6 +38,7 @@ const mutations = {
     state.tenants = [...tenants]
   },
   SAVE_PUBKEY: (state, pubKey) => {
+    sessionStorage.setItem('pubKey', pubKey)
     state.pubKey = pubKey
   },
   SAVE_STN: (state, { timeStamp, nonce, salt }) => {
@@ -65,6 +70,17 @@ const mutations = {
       }
       state.access_token = accessToken
     }
+  },
+  SAVE_MENU: (state, { menuList, menuData, menuDict }) => {
+    state.menuList = menuList
+    state.menuData = menuData
+    state.menuDict = menuDict
+    sessionStorage.setItem('cusMenu', JSON.stringify(menuData))
+    sessionStorage.setItem('menuList', JSON.stringify(menuList))
+    sessionStorage.setItem('menuDict', JSON.stringify(menuDict))
+  },
+  CLEAR_TOKEN: (state) => {
+    state.access_token = undefined
   }
 }
 
@@ -99,11 +115,11 @@ const actions = {
       })
     })
   },
-  async login({ state, commit }, { payload }) {
+  async login({ state, commit, dispatch }, { payload }) {
     let accessToken = state.access_token
     if (!accessToken) accessToken = sessionStorage.getItem('accessToken')
     if (accessToken && accessToken !== '') {
-      router.push('/')
+      // router.push('/')
     }
     if (!payload) {
       return
@@ -128,11 +144,8 @@ const actions = {
       // 保存tenantId
       sessionStorage.setItem('tenantId', payload.tenantId)
 
-      // 登录成功
-      // reloadAuthorized();
-
       // 跳转到首页
-      await delay(300)
+      await delay(1300)
       if (response.data.changePass === '1') {
         sessionStorage.setItem('cusMenu', JSON.stringify([]))
         sessionStorage.setItem('menuList', JSON.stringify([]))
@@ -140,19 +153,78 @@ const actions = {
         // window.location.replace('/account/settings/security');
       } else {
         // 获取用户菜单
-        // yield put({
-        //   type: 'fetchCusMenus',
-        //   payload: { category: 'tenant' },
-        // });
-        // yield take('fetchCusMenus/@@end');
-        // yield put({
-        //   type: 'saveMenu',
-        // });
-        // window.location.replace('/');
+        await dispatch({
+          type: 'fetchCusMenus',
+          payload: { category: 'tenant' }
+        })
+        window.location.replace('/')
       }
     } else {
       Message.error(`${response.errmsg}|${response.traceId}`)
     }
+  },
+  async fetchCusMenus({ dispatch, commit }, { payload, callback }) {
+    const response = await renderMenusLoginUser(payload)
+    if (response.errcode === '0') {
+      const menuList = []
+      const menuData = []
+      const menuDict = {}
+      if (response.data.length > 0) {
+        (function deal(menus) {
+          const subMenus = []
+          menus.forEach(item => {
+            const menu = {}
+            const redirectMenu = {}
+            if (item.parentId === '0') {
+              redirectMenu.key = item.id
+              redirectMenu.name = item.nodeName
+              redirectMenu.path = item.route ? item.route : 'undefined'
+              menuDict[item.route || '/undefined'] = item.id
+            } else {
+              menu.icon = item.logo || 'icon-todo'
+            }
+            menu.name = item.nodeName
+            menu.path = item.route
+              ? item.route.substring(item.route.lastIndexOf('/') + 1)
+              : 'undefined'
+            if (item.children && item.children.length > 0) {
+              menu.children = deal(item.children)
+              if (item.parentId === '0') {
+                redirectMenu.children = [
+                  {
+                    path: item.children[0].route
+                  }
+                ]
+                menuList.push(menu)
+                menuData.push(redirectMenu)
+              } else {
+                subMenus.push(menu)
+              }
+            } else if (item.parentId === '0') {
+              menuList.push(menu)
+              menuData.push(redirectMenu)
+            } else {
+              subMenus.push(menu)
+            }
+          })
+          return subMenus
+        })(response.data)
+      }
+      await commit('SAVE_MENU', { menuList, menuData, menuDict })
+      if (callback) {
+        callback(menuList, menuData)
+      }
+    } else {
+      Message.error(`${response.errmsg}|${response.traceId}`)
+      dispatch('logout')
+    }
+  },
+  logout({ commit }) {
+    commit('CHANGE_STATUS', {
+      status: false,
+      currentAuthority: 'guest'
+    })
+    commit('CLEAR_TOKEN')
   }
 }
 

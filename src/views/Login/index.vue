@@ -3,45 +3,41 @@
  * @Author: youme
  * @LastEditors: youme
  * @Date: 2020-04-24 09:50:09
- * @LastEditTime: 2020-04-30 10:11:49
+ * @LastEditTime: 2020-05-06 09:36:28
  -->
 <template>
-  <div class="login-wrap">
-    <div class="login-title">SWEET-MIND</div>
-    <div class="login-form">
-      <el-form ref="form" :model="form" :rules="rules">
-        <el-form-item prop="username">
-          <el-input
-            placeholder="请输入"
-            v-model="form.username"
-            prefix-icon="el-icon-user" />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            show-password
-            placeholder="请输入"
-            v-model="form.password"
-            prefix-icon="el-icon-unlock"/>
-        </el-form-item>
-        <el-form-item v-if="env==='dev'" prop="tenantId">
-          <el-select v-model="form.tenantId" placeholder="租户列表">
-            <el-option
-              v-for="item in tenants"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="this.handleSubmit" class="login-button" type="primary" round>登录</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-  </div>
+  <el-form ref="form" :model="form" :rules="rules">
+    <el-form-item prop="username">
+      <el-input
+        placeholder="请输入"
+        v-model="form.username"
+        prefix-icon="el-icon-user" />
+    </el-form-item>
+    <el-form-item prop="password">
+      <el-input
+        show-password
+        placeholder="请输入"
+        v-model="form.password"
+        prefix-icon="el-icon-unlock"/>
+    </el-form-item>
+    <el-form-item v-if="env==='dev'" prop="tenantId">
+      <el-select v-model="form.tenantId" placeholder="租户列表">
+        <el-option
+          v-for="item in tenants"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"/>
+      </el-select>
+    </el-form-item>
+    <el-form-item>
+      <el-button @click="this.handleSubmit" class="login-button" type="primary" round>登录</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script>
 const bcrypt = require('bcryptjs')
+
 export default {
   data() {
     const env = process.env.NODE_ENV === 'development' ? 'dev' : 'production' // eslint-disable-line
@@ -128,54 +124,13 @@ export default {
 </script>
 
 <style lang="scss">
-.login-wrap {
-  height: 100vh;
-  background: url('../../assets/login_images/cover.jpg') 0 / cover fixed;
-  .login-title {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    margin-top: -230px;
-    text-align: center;
-    font-size: 30px;
-    color: #fff;
-    text-shadow: 2px 2px 3px #000;
-    transition-duration: 2s;
-  }
-  .login-form {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 420px;
-    min-height: 270px;
-    margin: -165px 0 0 -210px;
-    padding: 40px;
-    border-radius: 5px;
-    box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.3), 0 0.5em 1em rgba(0, 0, 0, 0.6);
-    background: hsla(0, 0%, 100%, 0.25);
-    overflow: hidden;
-    box-sizing: border-box;
-    &::before {
-      background: url('../../assets/login_images/cover.jpg') 0 / cover fixed;
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      bottom: 0;
-      margin: -30px;
-      z-index: 0;
-      filter: blur(1px);
-    }
-  }
-  .login-button {
-    width: 100%;
-  }
-  .el-form-item:not(:last-child) {
-    margin-bottom: 30px;
-  }
-  .el-form-item:last-child {
-    margin-bottom: 0;
-  }
+.login-button {
+  width: 100%;
+}
+.el-form-item:not(:last-child) {
+  margin-bottom: 30px;
+}
+.el-form-item:last-child {
+  margin-bottom: 0;
 }
 </style>
